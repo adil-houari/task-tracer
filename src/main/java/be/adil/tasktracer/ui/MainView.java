@@ -250,23 +250,28 @@ public class MainView {
 
         TableColumn<Task, Number> progressCol = new TableColumn<>("Progress");
         progressCol.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getProgressPercent()));
+
         progressCol.setCellFactory(column -> new TableCell<>() {
             private final ProgressBar progressBar = new ProgressBar();
             private final Label label = new Label();
             private final VBox box = new VBox(4, progressBar, label);
+
+            {
+                progressBar.setMaxWidth(Double.MAX_VALUE);
+                label.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px;");
+            }
 
             @Override
             protected void updateItem(Number progress, boolean empty) {
                 super.updateItem(progress, empty);
 
                 if (empty || progress == null) {
+                    setText(null);
                     setGraphic(null);
                 } else {
                     int value = progress.intValue();
                     progressBar.setProgress(value / 100.0);
                     label.setText(value + "%");
-                    label.setStyle("-fx-text-fill: #e2e8f0; -fx-font-size: 11px;");
-                    progressBar.setMaxWidth(Double.MAX_VALUE);
                     setGraphic(box);
                 }
             }
@@ -365,6 +370,7 @@ public class MainView {
     private void refreshAll() {
         List<Task> tasks = taskService.list();
         table.setItems(FXCollections.observableArrayList(tasks));
+        table.refresh();
         updateStats(tasks);
     }
 
